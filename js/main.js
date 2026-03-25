@@ -54,9 +54,15 @@ function initCordobaCityMap() {
   addMarker(m, 37.877, -4.784, 'sight', 'Palacio de Viana', '12 courtyards, €6');
   addMarker(m, 37.880, -4.780, 'sight', 'Plaza de la Corredera', 'Unique arcaded plaza');
   addMarker(m, 37.886, -4.776, 'garden', 'Jardines de la Agricultura', 'Flat, shaded park');
+  addMarker(m, 37.869, -4.795, 'garden', 'Jardín Botánico', '3,000+ species, €3');
+  addMarker(m, 37.874, -4.779, 'garden', 'Sotos de la Albolafia', 'Riverbank reserve, free');
+  addMarker(m, 37.877, -4.799, 'garden', 'Parque de la Asomadilla', '120 ha, free, very local');
 
-  // Show
+  // Shows & Activities
   addMarker(m, 37.876, -4.783, 'show', 'Caballerizas Reales', 'Horse show Apr 2, 20:00');
+  addMarker(m, 37.879, -4.779, 'show', 'Tablao Flamenco Cardenal', 'Live flamenco shows, book ahead');
+  addMarker(m, 37.879, -4.779, 'show', 'Semana Santa Processions', 'Apr 2–5, all over historic centre');
+  addMarker(m, 37.879, -4.779, 'show', 'Guided Old City Walking Tour', 'Daily 10:00 & 17:00, 2 hrs');
 
   // Restaurants
   addMarker(m, 37.880, -4.780, 'food', 'Bodegas Mezquita', 'Salmorejo, oxtail');
