@@ -63,6 +63,8 @@ function initCordobaCityMap() {
   addMarker(m, 37.879, -4.779, 'show', 'Tablao Flamenco Cardenal', 'Live flamenco shows, book ahead');
   addMarker(m, 37.879, -4.779, 'show', 'Semana Santa Processions', 'Apr 2–5, all over historic centre');
   addMarker(m, 37.879, -4.779, 'show', 'Guided Old City Walking Tour', 'Daily 10:00 & 17:00, 2 hrs');
+  addMarker(m, 37.882, -4.771, 'sight', 'Templo Romano', 'Free, 1st-century columns, always open');
+  addMarker(m, 37.875, -4.777, 'sight', 'Torre de la Calahorra', '€4.50, best rooftop view in Córdoba');
 
   // Restaurants
   addMarker(m, 37.880, -4.780, 'food', 'Bodegas Mezquita', 'Salmorejo, oxtail');
@@ -113,6 +115,8 @@ function initAlmunecarCityMap() {
   addMarker(m, 36.735, -3.688, 'sight', 'Cueva de Siete Palacios', 'Roman museum');
   addMarker(m, 36.735, -3.687, 'garden', 'Parque El Majuelo', 'Free botanical garden');
   addMarker(m, 36.755, -3.666, 'sight', 'Roman Aqueduct', 'Free, 3 km north');
+  addMarker(m, 36.731, -3.697, 'sight', 'Peñón del Santo', 'Best view in Almuñécar, 10 min walk');
+  addMarker(m, 36.718, -3.730, 'sight', 'La Herradura Mirador (Cerro Gordo)', 'Full bay view from cliff road');
 
   // Restaurants
   addMarker(m, 36.736, -3.685, 'food', 'Firmvm', 'Sea views, €25-40pp');
@@ -172,6 +176,7 @@ function initAlfarnatejoTripsMap() {
   addMarker(m, 37.176, -3.599, 'sight', 'Granada', '1h, Alhambra €19-22');
   addMarker(m, 36.742, -5.166, 'sight', 'Ronda', '1h 30min, Puente Nuevo');
   addMarker(m, 36.935, -4.555, 'activity', 'Caminito del Rey', '50 min, €10');
+  addMarker(m, 36.748, -4.023, 'sight', 'El Acebuchal Ghost Village', '#1 hidden gem, 30-35 min');
   addMarker(m, 37.242, -5.108, 'sight', 'Osuna', '1h 15min, €4');
   addMarker(m, 37.266, -4.316, 'sight', 'Iznajar Lake', '1h, castle €3');
   addMarker(m, 37.093, -4.389, 'sight', 'Archidona', '40 min, free');
