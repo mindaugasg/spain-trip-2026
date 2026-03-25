@@ -42,11 +42,22 @@
     return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
+  function setCookie() {
+    const exp = new Date();
+    exp.setFullYear(exp.getFullYear() + 1);
+    document.cookie = 'ag_auth=1; expires=' + exp.toUTCString() + '; path=/; SameSite=Strict';
+  }
+
+  function hasCookie() {
+    return document.cookie.split(';').some(c => c.trim() === 'ag_auth=1');
+  }
+
   window.checkPassword = async function() {
     const val = document.getElementById('pw-input').value;
     const hash = await sha256(val);
     if (hash === HASH) {
       sessionStorage.setItem('ag_auth', '1');
+      setCookie();
       gate.style.display = 'none';
     } else {
       const err = document.getElementById('pw-error');
@@ -56,7 +67,7 @@
     }
   };
 
-  if (sessionStorage.getItem('ag_auth') !== '1') {
+  if (sessionStorage.getItem('ag_auth') !== '1' && !hasCookie()) {
     gate.style.display = 'flex';
     document.addEventListener('DOMContentLoaded', () => document.getElementById('pw-input').focus());
   }
