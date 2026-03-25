@@ -276,6 +276,7 @@ body {
 .cat-show { background: #D4A853; color: #333; }
 .cat-food-hall { background: #FF6B35; }
 .cat-daytrip { background: #004E89; }
+.cat-photo { background: #C2185B; }
 .cat-info { background: #607D8B; }
 .rating {
   display: inline-flex;
