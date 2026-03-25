@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="18-day Andalusia road trip guide: Cordoba, Almunecar, Alfarnatejo. Interactive maps, day trips, restaurants.">
+<meta name="theme-color" content="#004E89">
+<title>Andalusia 2026 — Travel Guide</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="password-gate" style="display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#004E89 0%,#1a6fa8 50%,#c9963b 100%);display:flex;align-items:center;justify-content:center;font-family:'Source Sans 3',sans-serif;">
+  <div style="background:rgba(255,255,255,0.97);border-radius:16px;padding:48px 40px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="font-size:2.5rem;margin-bottom:8px;">🇪🇸</div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:#004E89;margin:0 0 6px;">Andalusia 2026</h1>
+    <p style="color:#666;font-size:0.9rem;margin:0 0 28px;">Enter the password to access your travel guide</p>
+    <input id="pw-input" type="password" placeholder="Password" autocomplete="current-password"
+      style="width:100%;box-sizing:border-box;padding:12px 16px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;outline:none;transition:border-color .2s;margin-bottom:12px;"
+      onfocus="this.style.borderColor='#004E89'" onblur="this.style.borderColor='#e0e0e0'"
+      onkeydown="if(event.key==='Enter')checkPassword()">
+    <div id="pw-error" style="color:#c0392b;font-size:0.85rem;min-height:20px;margin-bottom:8px;"></div>
+    <button onclick="checkPassword()"
+      style="width:100%;padding:13px;background:#004E89;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;"
+      onmouseover="this.style.background='#003d6e'" onmouseout="this.style.background='#004E89'">
+      Enter Guide
+    </button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const HASH = 'c0f1226b247ee2edcfe450a233e701af0c0a3a72a02b705ff8316ae201802b55';
+  const gate = document.getElementById('password-gate');
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  window.checkPassword = async function() {
+    const val = document.getElementById('pw-input').value;
+    const hash = await sha256(val);
+    if (hash === HASH) {
+      sessionStorage.setItem('ag_auth', '1');
+      gate.style.display = 'none';
+    } else {
+      const err = document.getElementById('pw-error');
+      err.textContent = 'Incorrect password. Try again.';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  };
+
+  if (sessionStorage.getItem('ag_auth') !== '1') {
+    gate.style.display = 'flex';
+    document.addEventListener('DOMContentLoaded', () => document.getElementById('pw-input').focus());
+  }
+})();
+</script>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="hero">
+  <h1>Andalusia 2026</h1>
+  <p class="subtitle">18 Days &middot; Three Destinations &middot; One Unforgettable Journey</p>
+  <p class="route">Cordoba &rarr; Almunecar &rarr; Alfarnatejo</p>
+  <div class="dates">March 31 &ndash; April 17, 2026</div>
+  <div class="pregnancy-badge">Pregnancy-adapted itinerary (weeks 19&ndash;22)</div>
+  <span class="hero-credit">Photo: Alhambra at dawn, Wikimedia Commons (CC BY-SA)</span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('cordoba-city', this)">Cordoba</button>
+  <button class="tab" onclick="showTab('cordoba-trips', this)">Cordoba Trips</button>
+  <button class="tab" onclick="showTab('almunecar-city', this)">Almunecar</button>
+  <button class="tab" onclick="showTab('almunecar-trips', this)">Almunecar Trips</button>
+  <button class="tab" onclick="showTab('alfarnatejo-area', this)">Alfarnatejo</button>
+  <button class="tab" onclick="showTab('alfarnatejo-trips', this)">Alfarnatejo Trips</button>
+  <button class="tab" onclick="showTab('practical', this)">Practical</button>
+</div>
+
+<!-- ============================================================
+     CORDOBA CITY
+     ============================================================ -->
+<div id="cordoba-city" class="tab-content active">
+  <h2>Cordoba &mdash; April 1&ndash;6</h2>
+  <p>Five nights during Semana Santa. Airbnb south bank near Puente de San Rafael. Mindaugas working remotely Apr 1&ndash;3, couple days Apr 4&ndash;6.</p>
+
+  <div id="mapCordobaCity" class="map-container"></div>
+
+  <!-- ── SIGHTS ── -->
+  <h3>Sights &amp; Culture</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/mezquita-interior.jpg" alt="Mezquita-Catedral" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #D4A76A 0%, #8B7355 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Mezquita-Catedral <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Mezquita-Catedral+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span class="score">4.8</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>&euro;13 &middot; Book ahead at mezquitadecordoba.org</strong></p>
+        <p>UNESCO World Heritage mosque-cathedral with 856 red-and-white horseshoe arches. Patio de los Naranjos (orange courtyard) is free. One of the most extraordinary buildings in Europe.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/roman-bridge.jpg" alt="Roman Bridge" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8B7355 0%, #6B5B3E 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Roman Bridge <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Roman+Bridge+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>Free &middot; Open 24h</strong></p>
+        <p>230m flat walk across the Guadalquivir with spectacular Mezquita views. Benches at both ends. Best at sunset when the stone glows golden. Pregnancy-perfect &mdash; completely flat.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/jewish-quarter.jpg" alt="Jewish Quarter" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #F5F5DC 0%, #DEB887 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Jewish Quarter (Juderia) <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Jewish+Quarter+Juderia+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>Free (Synagogue &euro;0.30)</strong></p>
+        <p>Whitewashed maze of narrow lanes with flower-draped balconies. Medieval Synagogue (one of only three surviving in Spain) and Casa de Sefarad museum (&euro;4).</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/calleja-flores.jpg" alt="Calleja de las Flores" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FF9770 0%, #FF6B35 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Calleja de las Flores <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Calleja+de+las+Flores+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>Free &middot; 2 min from Mezquita</strong></p>
+        <p>Cordoba's most photographed alley &mdash; narrow lane bursting with flowerpots, framing the Mezquita tower. Quick visit but iconic.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/alcazar.jpg" alt="Alcazar de los Reyes Cristianos" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Alcazar de los Reyes Cristianos <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Alcazar+de+los+Reyes+Cristianos+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>Free mornings &middot; Gardens open until 14:45</strong></p>
+        <p>Arabic-style gardens with tiered water features, hedged walkways, and citrus trees. Flat, shaded, pregnancy-friendly. Palace interior closed for renovation.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/palacio-viana.jpg" alt="Palacio de Viana" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #C19A6B 0%, #8B7355 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Palacio de Viana <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Palacio+de+Viana+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>&euro;6 patios-only &middot; Plaza de Don Gome, 2</strong></p>
+        <p>Twelve beautiful courtyards, each with a different character. &euro;6 patios-only ticket recommended (no standing guided tour, pregnancy-friendly).</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/plaza-corredera.jpg" alt="Plaza de la Corredera" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #CD853F 0%, #A0522D 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Plaza de la Corredera <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Plaza+de+la+Corredera+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>Free &middot; Open square</strong></p>
+        <p>Unique arcaded rectangular plaza &mdash; the only one of its kind in Andalusia. Great for morning cortado, people-watching, or evening strolls.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SHOWS & ACTIVITIES ── -->
+  <h3>Shows &amp; Activities</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/horse-show.jpg" alt="Horse show" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #D4A853 0%, #B8860B 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-show">Show</span>
+        <h4>Caballerizas Reales <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Caballerizas+Reales+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>&euro;17 &middot; CONFIRMED April 2, 20:00</strong></p>
+        <p>Andalusian horses performing dressage to Spanish guitar and flamenco. Royal stables built 1570. 75 minutes. Arrive 19:40 for good seats.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── PARKS ── -->
+  <h3>Parks &amp; Gardens</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/jardines-agricultura.jpg" alt="Jardines de la Agricultura" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #228B22 0%, #006400 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-park">Park</span>
+        <h4>Jardines de la Agricultura <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Jardines+de+la+Agricultura+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>Free &middot; All day</strong></p>
+        <p>Cordoba's largest central park with flat paths, duck pond, and rose gardens. Perfect pregnancy sanctuary for slow mornings.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RESTAURANTS ── -->
+  <h3>Restaurants</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/salmorejo.jpg" alt="Salmorejo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #E65100 0%, #BF360C 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Restaurant</span>
+        <h4>Bodegas Mezquita <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Bodegas+Mezquita+Cespedes+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>+34 957 49 00 04 &middot; Calle Cespedes, 12</strong></p>
+        <p>Next to the Mezquita. Try salmorejo, Mozarabic meatballs in almond-saffron sauce, oxtail croquettes. Continuous service from 12:30.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/croquetas.jpg" alt="Tapas" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8B4513 0%, #654321 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Restaurant</span>
+        <h4>Casa Pepe de la Juderia <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Casa+Pepe+de+la+Juderia+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>+34 957 20 07 44 &middot; Calle Romero, 1</strong></p>
+        <p>Upscale but warm. Famous croquetas, fried eggplant with honey, lamb. Dinner from 19:30.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/berenjenas-miel.jpg" alt="El Rincon de Carmen" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #6B4423 0%, #4A2C17 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Restaurant</span>
+        <h4>El Rincon de Carmen <a class="gm" href="https://www.google.com/maps/search/?api=1&query=El+Rincon+de+Carmen+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>+34 957 29 10 55 &middot; Calle Romero, 4</strong></p>
+        <p>Cozy courtyard, family-run. Grilled meats, salads, local specialties. Dinner from 19:30.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── CAFES ── -->
+  <h3>Cafes &amp; Breakfast</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/brunch-terrace.jpg" alt="Singular restaurant" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #4A90D9 0%, #2B6CB0 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-cafe">Cafe</span>
+        <h4>Singular <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Singular+Cafe+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>Ronda de Isasa, 4 &middot; +34 957 91 51 00</strong></p>
+        <p>Riverside cafe with outdoor seating. Excellent coffee and brunch. Perfect morning start with Roman Bridge views.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/desayuno.jpg" alt="The Golden Stack" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-cafe">Cafe</span>
+        <h4>The Golden Stack <a class="gm" href="https://www.google.com/maps/search/?api=1&query=The+Golden+Stack+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>Calle Fray Luis de Granada, 3</strong></p>
+        <p>Best breakfast in Cordoba. Pancakes, waffles, excellent coffee. Arrive early to avoid the queue.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/mercado-victoria.jpg" alt="Mercado Victoria" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FF8F00 0%, #E65100 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-food-hall">Food Hall</span>
+        <h4>Mercado Victoria <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Mercado+Victoria+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>Near Jardines de la Agricultura</strong></p>
+        <p>Modern food hall with 30+ stalls. Salmorejo, sushi, gourmet burgers. Indoor, air-conditioned. Good for indecisive days.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     CORDOBA DAY TRIPS
+     ============================================================ -->
+<div id="cordoba-trips" class="tab-content">
+  <h2>Cordoba Day Trips</h2>
+  <p>12 excursions within 15 min to 1.5 hours. Most sites free or &euro;5&ndash;10 entry.</p>
+
+  <div id="mapCordobaTrips" class="map-container"></div>
+
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/medina-azahara.jpg" alt="Medina Azahara" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #D4A76A 0%, #8B7355 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Medina Azahara <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Medina+Azahara+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>15 min &middot; Free (EU) / &euro;1.50 &middot; &euro;3 shuttle</strong></p>
+        <p>10th-century palatine city ruins &mdash; UNESCO World Heritage. Allow 2.5h. Open Tue&ndash;Sun until 15:00. Bring EU ID for free entry. Mostly flat.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/almodovar-castle.jpg" alt="Almodovar Castle" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8B4513 0%, #654321 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Almodovar del Rio Castle <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Castillo+de+Almodovar+del+Rio+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>25 min &middot; &euro;9</strong></p>
+        <p>Spectacular hilltop Moorish castle with 360&deg; views. Game of Thrones filming location. Allow 2 hours.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/montilla-wine.jpg" alt="Montilla" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8B1A1A 0%, #550000 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Montilla Wine Region <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Montilla+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>40 min &middot; Tastings &euro;10&ndash;15</strong></p>
+        <p>Sherry-style wine region. Visit Bodegas Alvear (oldest in Andalusia, 1729). Pregnancy: tour cellars without tasting.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/hornachuelos.jpg" alt="Hornachuelos" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #228B22 0%, #006400 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Hornachuelos Natural Park <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Hornachuelos+Natural+Park+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>1h &middot; Free</strong></p>
+        <p>Sierra Morena foothills. Lynx and eagle habitat. Easy riverside trail (Sendero del Bembezar, 3 km flat). Monastery viewpoint.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/zuheros.jpg" alt="Zuheros" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #F5F5DC 0%, #DCDCDC 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Zuheros White Village <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Zuheros+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>1h &middot; Castle &euro;4, Cave &euro;7</strong></p>
+        <p>One of Andalusia's prettiest pueblos blancos. Moorish castle, Cueva de los Murcielagos. Lunch at Zuhayra. Combine with Baena.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/olive-groves.jpg" alt="Olive groves" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #808000 0%, #556B2F 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Baena Olive Oil Country <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Baena+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>50 min &middot; Free mill tours (book ahead)</strong></p>
+        <p>Nunez de Prado organic mill &mdash; sample Spain's finest olive oil. 16th-century castle. Combine with Zuheros for a full day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/ecija.jpg" alt="Ecija" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #CD853F 0%, #8B4513 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Ecija "City of Towers" <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Ecija+Sevilla+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>1h &middot; Free</strong></p>
+        <p>11 baroque church towers. Stunning Penaflor Palace (free). Pleasant in April. Half-day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/priego.jpg" alt="Priego de Cordoba" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #F5DEB3 0%, #DEB887 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Priego de Cordoba <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Priego+de+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>1h 10min &middot; Free churches</strong></p>
+        <p>Baroque overload: 7 churches with incredible plasterwork. Balcon del Adarve panoramic terrace. Combine with Zuheros/Baena. Full day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/cardena-montoro.jpg" alt="Cardena-Montoro" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #3B5323 0%, #1C2912 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Cardena-Montoro Natural Park <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Cardena-Montoro+Natural+Park+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>1h &middot; Free &middot; Best early morning</strong></p>
+        <p>Deer and wild boar territory. Easy trails around Visitor Center. Combine with Montoro village on cliffs above the Guadalquivir.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/la-carlota.jpg" alt="La Carlota" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #C19A6B 0%, #9B7653 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>La Carlota <a class="gm" href="https://www.google.com/maps/search/?api=1&query=La+Carlota+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9734;&#9734;</span> <span class="score">3.8</span> <span class="source">Google</span></div>
+        <p><strong>30 min &middot; Free &middot; 1 hour visit</strong></p>
+        <p>18th-century planned agricultural colony with unique gridded layout. Quick cultural stop en route.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/guadiato-valley.jpg" alt="Guadiato Valley" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #696969 0%, #2F4F4F 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Guadiato Valley <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Guadiato+Valley+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.1</span> <span class="source">Google</span></div>
+        <p><strong>1h &middot; Free &middot; Half-day loop</strong></p>
+        <p>Former mining valley with dramatic landscapes. Belmez Castle ruins. Authentic, untouristy. Total peace.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/cordoba/guadalquivir-loop.jpg" alt="Guadalquivir River" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #4682B4 0%, #1E3A8A 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Guadalquivir River Loop <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Guadalquivir+River+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>Scenic drive &middot; 2&ndash;3 hours &middot; Free</strong></p>
+        <p>Self-drive circuit: Cordoba &rarr; Alcolea &rarr; Almodovar Castle &rarr; Montoro &rarr; back.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     ALMUNECAR CITY
+     ============================================================ -->
+<div id="almunecar-city" class="tab-content">
+  <h2>Almunecar &mdash; April 6&ndash;12</h2>
+  <p>Six nights on the Costa Tropical. HomeExchange with Miguel in Velilla-Taramay. Vaiva joins April 10 evening.</p>
+
+  <div id="mapAlmunecarCity" class="map-container"></div>
+
+  <!-- ── BEACHES ── -->
+  <h3>Beaches</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/cantarrijan-beach.jpg" alt="Cantarrijan Beach" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #2B6A7C 0%, #1A4D5C 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-beach">Beach</span>
+        <h4>Playa de Cantarrijan <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Playa+Cantarrijan+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>15 min drive &middot; Free &middot; Cerro Gordo Natural Park</strong></p>
+        <p>THE standout beach. Crystal-clear water hemmed by dramatic cliffs. In April you can drive down directly. Beachside restaurant La Barraca serves superb fresh fish.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/la-herradura.jpg" alt="La Herradura" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #0277BD 0%, #01579B 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-beach">Beach</span>
+        <h4>Playa de La Herradura <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Playa+de+La+Herradura+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>8 min drive &middot; Best snorkeling</strong></p>
+        <p>Perfect crescent horseshoe bay. Eastern end has the clearest water. Marina del Este nearby. Flat promenade, pregnancy-friendly.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/playa-velilla.jpg" alt="Playa Velilla" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #4FC3F7 0%, #0288D1 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-beach">Beach</span>
+        <h4>Playa Velilla <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Playa+Velilla+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>Walking distance &middot; Home beach</strong></p>
+        <p>1.5 km dark sand/gravel beach with full promenade. Quiet in April. Perfect for morning coffee walks. Water shoes useful.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/balcon-europa.jpg" alt="Playa Burriana Nerja" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-beach">Beach</span>
+        <h4>Playa Burriana (Nerja) <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Playa+Burriana+Nerja+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>25 min drive &middot; Only sandy beach nearby</strong></p>
+        <p>Golden sand Blue Flag beach. Famous Restaurante Ayo for wood-fired paella (&euro;10&ndash;12pp). If you want sand, this is it.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SIGHTS ── -->
+  <h3>Sights &amp; Culture</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/castillo-san-miguel.jpg" alt="Castillo de San Miguel" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #5D4037 0%, #3E2723 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Castillo de San Miguel <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Castillo+de+San+Miguel+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>&euro;4 combo ticket</strong></p>
+        <p>Phoenician-Moorish fortress with panoramic sea and mountain views. Combo includes Cueva de Siete Palacios museum.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/cueva-siete-palacios.jpg" alt="Cueva de Siete Palacios" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #795548 0%, #4E342E 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Cueva de Siete Palacios <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Cueva+de+Siete+Palacios+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>&euro;4 combo with castle</strong></p>
+        <p>Roman-era vaulted chambers housing the archaeological museum. Star exhibit: a 3,700-year-old Egyptian vase.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/parque-majuelo.jpg" alt="Parque El Majuelo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-park">Park</span>
+        <h4>Parque El Majuelo <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Parque+El+Majuelo+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>Free &middot; Flat, shaded</strong></p>
+        <p>Botanical garden with subtropical plants. Roman fish-salting ruins inside. Free, flat, pregnancy-perfect.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/roman-aqueduct.jpg" alt="Roman Aqueduct" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Roman Aqueduct <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Roman+Aqueduct+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>Free &middot; 3 km north of town</strong></p>
+        <p>Best-preserved Roman aqueduct in Andalusia at Torrecuevas. Impressive stone arches still standing after 2,000 years.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RESTAURANTS ── -->
+  <h3>Restaurants</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/pulpo.jpg" alt="Firmvm restaurant" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #E65100 0%, #BF360C 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Restaurant</span>
+        <h4>Firmvm <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Firmvm+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>+34 958 18 18 39 &middot; Avenida de Europa</strong></p>
+        <p>Modern Mediterranean with sea views. Tuna tataki, grilled octopus, local fish. &euro;25&ndash;40pp. Reserve 2&ndash;3 days ahead.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/gambas.jpg" alt="Seafood" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FF8F00 0%, #E65100 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Restaurant</span>
+        <h4>Calabajio <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Calabajio+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>+34 958 88 00 63 &middot; Calle Baja del Mar</strong></p>
+        <p>Upscale seafood with terrace views. Fresh catch, rice dishes. &euro;30&ndash;45pp. Dinner from 19:00.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/ensalada.jpg" alt="El Arbol Blanco" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #43A047 0%, #2E7D32 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Restaurant</span>
+        <h4>El Arbol Blanco <a class="gm" href="https://www.google.com/maps/search/?api=1&query=El+Arbol+Blanco+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>+34 958 63 47 05 &middot; Calle Andres Segovia</strong></p>
+        <p>Garden terrace with romantic lighting. Mediterranean menu. &euro;25&ndash;35pp. Opens 19:30.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/tapas-bar.jpg" alt="El Chaleco" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8D6E63 0%, #6D4C41 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Tapas</span>
+        <h4>El Chaleco <a class="gm" href="https://www.google.com/maps/search/?api=1&query=El+Chaleco+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>+34 958 63 37 64 &middot; Plaza Abderraman I</strong></p>
+        <p>Traditional tapas bar, local favorite. Fried fish, grilled prawns, salmorejo. &euro;15&ndash;20pp. Open all day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/cantarrijan-cliffs.jpg" alt="La Barraca" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #00838F 0%, #006064 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Chiringuito</span>
+        <h4>La Barraca (Cantarrijan) <a class="gm" href="https://www.google.com/maps/search/?api=1&query=La+Barraca+Cantarrijan+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>+34 677 47 27 67 &middot; At the beach</strong></p>
+        <p>Beachside dining at Cantarrijan. Fresh fish grilled to order, paella. &euro;20&ndash;30pp. Open year-round for lunch.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/food/terraza.jpg" alt="Los Geranios" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Tapas</span>
+        <h4>Los Geranios <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Los+Geranios+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.1</span> <span class="source">Google</span></div>
+        <p><strong>+34 958 63 00 20 &middot; Plaza de la Rosa</strong></p>
+        <p>Plaza terrace, tapas and raciones. Espetos and pescaito frito. &euro;12&ndash;18pp. Good for early dinners.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     ALMUNECAR DAY TRIPS
+     ============================================================ -->
+<div id="almunecar-trips" class="tab-content">
+  <h2>Almunecar Day Trips</h2>
+  <p>13 excursions from 10 min to 2 hours. Coast, mountains, culture, and nature.</p>
+
+  <div id="mapAlmunecarTrips" class="map-container"></div>
+
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/alhambra-lions.jpg" alt="Alhambra" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #C19A6B 0%, #8B4513 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Granada &amp; Alhambra <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Alhambra+Granada+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span class="score">4.7</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>1h &middot; &euro;19&ndash;22 &middot; BOOK WEEKS AHEAD</strong></p>
+        <p>UNESCO site &mdash; Nasrid Palaces, Generalife gardens. Book at tickets.alhambra-patronato.es. Full day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/nerja.jpg" alt="Nerja" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Nerja &amp; Frigiliana <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Nerja+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>30 min &middot; Caves &euro;13 &middot; cuevadenerja.es</strong></p>
+        <p>Cuevas de Nerja (5M-year-old stalactites). Balcon de Europa. Frigiliana white village. Ayo's paella.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/salobrena.jpg" alt="Salobrena" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #E8C5A5 0%, #DEB887 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Salobrena <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Salobrena+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>15 min east &middot; Castle &euro;3</strong></p>
+        <p>White village on dramatic rock with Moorish castle. Sugar cane fields below. Quick half-day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/alpujarras.jpg" alt="Alpujarras" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Alpujarras Villages <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Alpujarras+Granada+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>1h 30min &middot; Free &middot; Full day</strong></p>
+        <p>Pampaneira &rarr; Bubion &rarr; Capileira. Berber architecture, Sierra Nevada views. Just gentle village strolling.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/bodegas-calvente.jpg" alt="Bodegas Calvente" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8B1A1A 0%, #550000 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-activity">Activity</span>
+        <h4>Bodegas Calvente <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Bodegas+Calvente+Jete+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span></div>
+        <p><strong>15 min to Jete &middot; &euro;27pp</strong></p>
+        <p>Family-run hillside winery. Tour + 5-wine tasting + tapas. Pregnancy: tour without tasting.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/ron-montero.jpg" alt="Ron Montero" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #654321 0%, #3E2723 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-activity">Activity</span>
+        <h4>Ron Montero Distillery <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Ron+Montero+Motril+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>20 min to Motril &middot; FREE Mon&ndash;Fri 11&ndash;13:00</strong></p>
+        <p>Spain's only rum producer. No booking needed. 1 hour visit. Combine with Salobrena.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/cerro-gordo.jpg" alt="Cerro Gordo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Cerro Gordo Trail <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Cerro+Gordo+Natural+Park+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>15 min &middot; Free &middot; 1&ndash;2h</strong></p>
+        <p>Coastal nature reserve. 2 km watchtower walk. Cliffs, Mediterranean vegetation. Flat sections for pregnancy.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/malaga-city.jpg" alt="Malaga" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #D84315 0%, #BF360C 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Malaga City <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Malaga+City+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>1h west &middot; Picasso Museum &euro;12</strong></p>
+        <p>Picasso Museum, Alcazaba (&euro;3.50), Mercado Central, Muelle Uno port, Calle Larios shopping. Full day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/velez-malaga.jpg" alt="Velez-Malaga" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #5D4037 0%, #3E2723 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Velez-Malaga <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Velez-Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>25 min &middot; Alcazaba FREE &middot; Half-day</strong></p>
+        <p>Capital of Axarquia. Moorish Alcazaba, historic quarter, Thursday market. Torre del Mar beach 5 min further.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/la-herradura-snorkel.jpg" alt="La Herradura snorkeling" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #0277BD 0%, #01579B 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-activity">Activity</span>
+        <h4>La Herradura Snorkeling <a class="gm" href="https://www.google.com/maps/search/?api=1&query=La+Herradura+Almunecar+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>10 min &middot; Gear rental available</strong></p>
+        <p>Horseshoe bay with calm, clear water. Rocky areas for snorkeling. Kayak rentals. 3&ndash;4 hours.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/alhama-granada.jpg" alt="Alhama de Granada" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #C2185B 0%, #880E4F 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Alhama de Granada <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Alhama+de+Granada+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>50 min &middot; Free &middot; Half-day</strong></p>
+        <p>Gorge-edge town. Flat rim path with railings. Thermal bath ruins. Pregnancy-perfect.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/trevelez.jpg" alt="Trevelez" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #B0BEC5 0%, #78909C 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Trevelez <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Trevelez+Granada+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>2h &middot; Free &middot; Full day</strong></p>
+        <p>Spain's highest village (1,476m). Famous jamon serrano. Long drive but spectacular.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/sierra-lujar.jpg" alt="Sierra de Lujar" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #4A5D23 0%, #33691E 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Sierra de Lujar <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Sierra+de+Lujar+Granada+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>40 min &middot; Free &middot; Half-day</strong></p>
+        <p>Forest trails, picnic areas. Less visited than Alpujarras. Quiet nature escape.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     ALFARNATEJO AREA
+     ============================================================ -->
+<div id="alfarnatejo-area" class="tab-content">
+  <h2>Alfarnatejo &mdash; April 12&ndash;17</h2>
+  <p>Five nights at Zilvita's home for her birthday. Mountain village, population ~400. Highs 15&ndash;17&deg;C.</p>
+
+  <div id="mapAlfarnatejoArea" class="map-container"></div>
+
+  <!-- ── LOCAL ── -->
+  <h3>Village &amp; Local Area</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/white-village.jpg" alt="Alfarnatejo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #F5F5DC 0%, #DEB887 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-info">Home Base</span>
+        <h4>Alfarnatejo Village <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Alfarnatejo+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>850m elevation &middot; Population ~400</strong></p>
+        <p>Tiny whitewashed Axarquia village. Olive groves, almond trees, stone lanes. Peace and authenticity.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/transfer/comares.jpg" alt="Comares" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #795548 0%, #4E342E 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Comares <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Comares+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>20 min &middot; Zipline at comaresaventura.es</strong></p>
+        <p>Village on a ridge with jaw-dropping views to the coast. Optional zipline for the adventurous.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/transfer/periana.jpg" alt="Periana" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8BC34A 0%, #689F38 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-activity">Activity</span>
+        <h4>Periana Olive Oil Co-op <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Periana+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>15 min &middot; Shop open weekdays</strong></p>
+        <p>Buy excellent extra virgin olive oil (&euro;8&ndash;15/bottle). Authentic, off-tourist-trail.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/lake-vinuela.jpg" alt="Lake Vinuela" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #0288D1 0%, #01579B 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-sight">Sight</span>
+        <h4>Lake Vinuela <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Lake+Vinuela+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>20 min &middot; Free</strong></p>
+        <p>Reservoir surrounded by mountains. Shoreline walk, mirador views. Flat, pregnancy-friendly.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RESTAURANTS ── -->
+  <h3>Restaurants</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/venta-alfarnate.jpg" alt="Venta de Alfarnate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #A1887F 0%, #795548 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-restaurant">Restaurant</span>
+        <h4>Venta de Alfarnate <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Venta+de+Alfarnate+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span> &middot; <span class="score">4.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>15 min &middot; Spain's oldest inn (est. 1690)</strong></p>
+        <p>Mountain pass inn. Rustic charm, hearty food &mdash; stews, roast meats, migas. &euro;15&ndash;25pp.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── TRAVEL INFO ── -->
+  <h3>Travel Logistics</h3>
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/casares.jpg" alt="Scenic transfer" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FF7043 0%, #E64A19 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-info">Transfer</span>
+        <h4>April 12: Scenic Route <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Velez-Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <p><strong>5 stops &middot; 6h total &middot; Depart after breakfast</strong></p>
+        <p>Almunecar &rarr; Velez-Malaga (9:30) &rarr; Comares + zipline (11:15) &rarr; Lake Vinuela (13:00) &rarr; Periana (14:00) &rarr; Venta de Alfarnate lunch (15:15) &rarr; arrive ~17:00.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #F44336 0%, #C62828 100%);"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-info">Departure</span>
+        <h4>April 17: Airport <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Malaga+Airport+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <p><strong>07:00 depart &middot; 50&ndash;60 min to AGP</strong></p>
+        <p>Return rental car. Wizz Air W61912 departs 10:20 &rarr; Vilnius 15:35.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     ALFARNATEJO DAY TRIPS
+     ============================================================ -->
+<div id="alfarnatejo-trips" class="tab-content">
+  <h2>Alfarnatejo Day Trips</h2>
+  <p>15 excursions within 25 min to 1.5 hours.</p>
+
+  <div id="mapAlfarnatejoTrips" class="map-container"></div>
+
+  <div class="info-grid">
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/antequera.jpg" alt="Antequera" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #D4A76A 0%, #8B7355 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Antequera &amp; El Torcal <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Antequera+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>45 min &middot; Dolmens free &middot; Alcazaba &euro;6</strong></p>
+        <p>UNESCO Dolmens (5,500 years old). Alcazaba 360&deg; views. El Torcal surreal limestone formations. Full day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/nerja-caves.jpg" alt="Nerja Caves" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #607D8B 0%, #455A64 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Nerja &amp; Frigiliana <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Cuevas+de+Nerja+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>40 min &middot; Caves &euro;13 &middot; cuevadenerja.es</strong></p>
+        <p>Stalactite caves (~250 steps). Frigiliana white village. Balcon de Europa promenade. Full day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/alhambra.jpg" alt="Alhambra" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #C19A6B 0%, #8B4513 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Granada <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Granada+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span class="score">4.7</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>1h &middot; Alhambra &euro;19&ndash;22</strong></p>
+        <p>Alhambra, Albaicin quarter, Cathedral, Mirador de San Nicolas, tapas on Navas street. Full day.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/ronda.jpg" alt="Ronda" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #8B4513 0%, #654321 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Ronda <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Ronda+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span class="score">4.7</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>1h 30min &middot; Puente Nuevo free</strong></p>
+        <p>Dramatic gorge town. Puente Nuevo bridge (120m high). Spain's oldest bullring. Iconic Andalusian sight.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/caminito-del-rey.jpg" alt="Caminito del Rey" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #607D8B 0%, #37474F 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-activity">Activity</span>
+        <h4>Caminito del Rey <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Caminito+del+Rey+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <span class="score">4.8</span> <span class="source">Google</span> &middot; <span class="score">5.0</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>50 min &middot; &euro;10 &middot; Book weeks ahead</strong></p>
+        <p>Dramatic gorge walkway on cliff walls. 8 km trail. Wide path with railings. Skip if uncomfortable with heights.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/osuna.jpg" alt="Osuna" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #C2A76B 0%, #8B7355 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Osuna <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Osuna+Sevilla+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>1h 15min &middot; Colegiata &euro;4</strong></p>
+        <p>Aristocratic Baroque town. Game of Thrones location. Less visited than Ronda but equally beautiful.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/iznajar.jpg" alt="Iznajar" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Iznajar Lake <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Iznajar+Cordoba+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>1h &middot; Castle &euro;3</strong></p>
+        <p>Andalusia's largest lake. Village above reservoir. Peaceful, scenic. Perfect pregnancy trip.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/archidona.jpg" alt="Archidona" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #D4A76A 0%, #A67C52 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Archidona <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Archidona+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>40 min &middot; Free &middot; 2h</strong></p>
+        <p>Unique octagonal Plaza Ochavada. Moorish castle ruins, Sanctuary viewpoint. Quick stop.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/costa-del-sol.jpg" alt="Costa del Sol" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-beach">Beach</span>
+        <h4>Costa del Sol Beaches <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Torre+del+Mar+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.3</span> <span class="source">Google</span></div>
+        <p><strong>30&ndash;45 min &middot; Free</strong></p>
+        <p>Torre del Mar (30 min), Rincon de la Victoria (45 min). Sandy, chiringuitos. Beach day alternative.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/montes-malaga.jpg" alt="Montes de Malaga" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #388E3C 0%, #2E7D32 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Montes de Malaga <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Montes+de+Malaga+Natural+Park+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>45 min &middot; Free &middot; Half-day</strong></p>
+        <p>Forest trails, streams, picnic areas. Easy Torrijos trail (4 km loop). Peaceful nature.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/el-torcal.jpg" alt="El Torcal" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #90A4AE 0%, #607D8B 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>El Torcal <a class="gm" href="https://www.google.com/maps/search/?api=1&query=El+Torcal+de+Antequera+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.6</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>50 min &middot; Free &middot; 1&ndash;2h</strong></p>
+        <p>Surreal limestone karst. Green Route: 1.5 km loop, pregnancy-walkable. Can do standalone.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/alhama-granada.jpg" alt="Alhama de Granada" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #C2185B 0%, #880E4F 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Alhama de Granada <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Alhama+de+Granada+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span></div>
+        <p><strong>1h &middot; Free &middot; Half-day</strong></p>
+        <p>Gorge-edge town. Flat rim path with railings. Thermal bath ruins. Pregnancy-perfect.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/zafarraya.jpg" alt="Zafarraya" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Zafarraya Pass <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Zafarraya+Pass+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.2</span> <span class="source">Google</span></div>
+        <p><strong>35 min &middot; Free &middot; Scenic drive</strong></p>
+        <p>Mountain pass. Stunning views, Neanderthal cave (exterior), windmills. Combine with Alhama de Granada.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/alfarnatejo/white-villages-circuit.jpg" alt="White Villages" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #F5F5DC 0%, #D3D3D3 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>White Villages Circuit <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Comares+Malaga+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.4</span> <span class="source">Google</span></div>
+        <p><strong>Half to full day &middot; Free</strong></p>
+        <p>Comares &rarr; Cutar &rarr; Benamocarra &rarr; Benamargosa. Zero tourists. "Real" Andalusia.</p>
+      </div>
+    </div>
+
+    <div class="daytrip-card">
+      <img class="daytrip-image" loading="lazy" src="images/almunecar/malaga-city.jpg" alt="Malaga City" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="daytrip-gradient" style="background: linear-gradient(135deg, #D84315 0%, #BF360C 100%); display: none;"></div>
+      <div class="daytrip-content">
+        <span class="category-label cat-daytrip">Day Trip</span>
+        <h4>Malaga City <a class="gm" href="https://www.google.com/maps/search/?api=1&query=Malaga+City+Spain" target="_blank" rel="noopener">&#x1F4CD;</a></h4>
+        <div class="rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span> <span class="score">4.5</span> <span class="source">Google</span> &middot; <span class="score">4.5</span> <span class="source">Tripadvisor</span></div>
+        <p><strong>1h &middot; Picasso Museum &euro;12</strong></p>
+        <p>Picasso Museum, Alcazaba, Muelle Uno port, Mercado Central, Calle Larios shopping. Full day.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     PRACTICAL
+     ============================================================ -->
+<div id="practical" class="tab-content">
+  <h2>Practical Information</h2>
+
+  <h3>Weather &amp; Packing (Early April)</h3>
+  <div class="info-grid">
+    <div class="info-card">
+      <h4>Cordoba</h4>
+      <p>Highs 18&ndash;20&deg;C, lows 8&ndash;10&deg;C. Warm sunny days, cool evenings. Layers, light jacket, comfortable shoes, sunscreen.</p>
+    </div>
+    <div class="info-card">
+      <h4>Almunecar (Costa Tropical)</h4>
+      <p>Highs 19&ndash;21&deg;C, lows 12&ndash;14&deg;C. Microclimate = more sun. Swimwear for beach days. Water ~16&deg;C.</p>
+    </div>
+    <div class="info-card">
+      <h4>Alfarnatejo (Mountains)</h4>
+      <p>Highs 15&ndash;17&deg;C, lows 6&ndash;8&deg;C. Warmer jacket for evenings. Crisp mountain air.</p>
+    </div>
+    <div class="info-card">
+      <h4>General Packing</h4>
+      <p>Walking shoes (5&ndash;10 km/day), layers, sunscreen + hat, rain jacket, power adapter (Type C/F), swimwear, reusable water bottle.</p>
+    </div>
+  </div>
+
+  <h3>Pregnancy (Weeks 19&ndash;22)</h3>
+  <div class="pregnancy-note">
+    <p><strong>Healthcare:</strong> Cordoba: Hospital Reina Sofia (~10 min). Almunecar: Hospital Axarquia in Velez-Malaga (20 min). Bring EHIC card.</p>
+    <p><strong>Food safety:</strong> Avoid unpasteurized cheese, raw seafood. Salmorejo is safe. Well-cooked fish, grilled meats &mdash; all fine.</p>
+    <p><strong>Movement:</strong> Comfortable shoes. Compression socks for flights. Stop every 90 min on drives. Rest days built in.</p>
+  </div>
+
+  <h3>Booking Checklist</h3>
+  <div class="booking-checklist">
+    <h4>Confirmed</h4>
+    <ul>
+      <li>Caballerizas Reales &mdash; April 2, 20:00</li>
+      <li>Flights (Ryanair + Wizz) &middot; Car rental (CarGest Premium, &euro;598)</li>
+      <li>Cordoba Airbnb &middot; Almunecar HomeExchange &middot; Alfarnatejo with Zilvita</li>
+    </ul>
+    <h4>Book NOW</h4>
+    <ul>
+      <li>Mezquita-Catedral &mdash; mezquitadecordoba.org</li>
+      <li>Alhambra &mdash; tickets.alhambra-patronato.es</li>
+    </ul>
+    <h4>Book 1&ndash;2 Weeks Ahead</h4>
+    <ul>
+      <li>Cuevas de Nerja &mdash; cuevadenerja.es</li>
+      <li>Cordoba: Bodegas Mezquita (+34 957 49 00 04), Casa Pepe (+34 957 20 07 44), El Rincon (+34 957 29 10 55)</li>
+      <li>Almunecar: Firmvm (+34 958 18 18 39), Calabajio (+34 958 88 00 63), El Arbol Blanco (+34 958 63 47 05)</li>
+    </ul>
+    <h4>No Booking Needed</h4>
+    <ul>
+      <li>Medina Azahara (free EU) &middot; Alcazar gardens (free mornings) &middot; All parks &middot; Antequera dolmens &middot; El Torcal &middot; All beaches &middot; Frigiliana</li>
+    </ul>
+  </div>
+
+  <h3>Essential Info</h3>
+  <div class="info-grid">
+    <div class="info-card">
+      <h4>Apps</h4>
+      <p><strong>Google Maps</strong> (offline for Cordoba, Malaga, Granada)<br>
+      <strong>Google Translate</strong> (Spanish phrasebook)<br>
+      <strong>TheFork</strong> (restaurant reservations)</p>
+    </div>
+    <div class="info-card">
+      <h4>Spanish Phrases</h4>
+      <p><strong>Hola</strong> (Hello) &middot; <strong>Gracias</strong> (Thanks) &middot; <strong>Por favor</strong> (Please)<br>
+      <strong>La cuenta</strong> (The bill) &middot; <strong>Una mesa para dos</strong> (Table for two)<br>
+      <strong>Donde esta el bano?</strong> (Where is the bathroom?)<br>
+      <strong>Estoy embarazada</strong> (I'm pregnant)</p>
+    </div>
+    <div class="info-card">
+      <h4>Emergency</h4>
+      <p><strong>EU Emergency:</strong> 112 &middot; <strong>Police:</strong> 091 &middot; <strong>Ambulance:</strong> 061</p>
+    </div>
+  </div>
+</div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0})">&uarr;</button>
+
+<footer>
+  Prepared for Mindaugas, Ieva &amp; Vaiva &middot; Andalusia 2026
+</footer>
+
+<script defer src="js/main.js"></script>
+</body>
+</html>

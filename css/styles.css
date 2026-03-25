@@ -1,0 +1,981 @@
+/* Andalusia 2026 Travel Guide - Mobile-First Styles */
+/* All images: Wikimedia Commons (CC BY-SA) for personal use */
+
+:root {
+  --sunset-orange: #FF6B35;
+  --deep-teal: #004E89;
+  --warm-sand: #F7B267;
+  --soft-cream: #FFFBF0;
+  --night-blue: #1A1B2E;
+  --accent-coral: #FF9770;
+  --sage-green: #6B8E71;
+  --terracotta: #C75B39;
+  --gold: #D4A853;
+  --deep-olive: #556B2F;
+  --sea: #2B6A7C;
+  --light-bg: #F8F9FA;
+  --glass-white: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 56px rgba(0,0,0,0.16);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--light-bg);
+  color: var(--night-blue);
+  line-height: 1.65;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+/* ── SCROLL PROGRESS BAR ── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sunset-orange), var(--accent-coral), var(--warm-sand));
+  z-index: 9999;
+  transition: width 0.1s linear;
+}
+
+/* ══════════════════════════════════════
+   HERO — mobile base
+   ══════════════════════════════════════ */
+.hero {
+  background: url('../images/hero-alhambra.jpg') center/cover no-repeat;
+  color: white;
+  padding: 80px 20px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(0,78,137,0.82) 0%, rgba(26,27,46,0.65) 40%, rgba(255,107,53,0.55) 100%);
+  z-index: 0;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(to top, var(--light-bg), transparent);
+  z-index: 0;
+}
+.hero-credit {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.3);
+  z-index: 2;
+}
+.hero * { position: relative; z-index: 1; }
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+  font-weight: 700;
+  text-shadow: 0 3px 20px rgba(0,0,0,0.5);
+  animation: fadeInUp 0.8s ease;
+}
+.hero .subtitle {
+  font-size: 1rem;
+  opacity: 0.95;
+  font-weight: 300;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  animation: fadeInUp 0.8s ease 0.1s both;
+}
+.hero .route {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin: 12px 0;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  animation: fadeInUp 0.8s ease 0.2s both;
+}
+.hero .dates {
+  display: inline-block;
+  padding: 10px 22px;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  border-radius: 50px;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 8px;
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.12);
+  animation: fadeInUp 0.8s ease 0.3s both;
+}
+.pregnancy-badge {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   MAIN TABS — horizontal scroll on mobile
+   ══════════════════════════════════════ */
+.tabs {
+  display: flex;
+  background: var(--glass-white);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  background: transparent;
+  border: none;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: var(--night-blue);
+  transition: all var(--transition);
+  border-bottom: 3px solid transparent;
+  font-family: 'Source Sans 3', sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 48px;
+  scroll-snap-align: start;
+}
+.tab:hover {
+  color: var(--sunset-orange);
+  background: rgba(255, 107, 53, 0.04);
+}
+.tab.active {
+  color: var(--sunset-orange);
+  border-bottom-color: var(--sunset-orange);
+  font-weight: 600;
+  background: rgba(255, 107, 53, 0.06);
+}
+
+/* ══════════════════════════════════════
+   TAB CONTENT
+   ══════════════════════════════════════ */
+.tab-content {
+  display: none;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 16px;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.tab-content.active { display: block; }
+.tab-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  color: var(--deep-teal);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.tab-content > p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+.tab-content h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--deep-teal);
+  margin: 28px 0 12px 0;
+  font-weight: 700;
+}
+.category-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+.cat-sight { background: #1565C0; }
+.cat-restaurant { background: #E65100; }
+.cat-cafe { background: #FF8F00; }
+.cat-beach { background: #2B6A7C; }
+.cat-park { background: #2E7D32; }
+.cat-activity { background: #7B1FA2; }
+.cat-show { background: #D4A853; color: #333; }
+.cat-food-hall { background: #FF6B35; }
+.cat-daytrip { background: #004E89; }
+.cat-info { background: #607D8B; }
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #FF8F00;
+  margin-top: 4px;
+}
+.rating .stars {
+  letter-spacing: 1px;
+}
+.rating .score {
+  color: #555;
+  font-weight: 500;
+}
+.rating .source {
+  color: #999;
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+/* ══════════════════════════════════════
+   SUB TABS — horizontal scroll on mobile
+   ══════════════════════════════════════ */
+.sub-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 20px -16px;
+  padding: 4px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.sub-tabs::-webkit-scrollbar { display: none; }
+.sub-tab {
+  background: #F1F3F5;
+  border: none;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #666;
+  transition: all var(--transition);
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 44px;
+  scroll-snap-align: start;
+}
+.sub-tab:hover {
+  color: var(--sunset-orange);
+  background: rgba(255,255,255,0.7);
+}
+.sub-tab.active {
+  color: var(--sunset-orange);
+  background: white;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.sub-tab-content { display: none; }
+.sub-tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+.sub-tab-content h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--deep-teal);
+  margin: 16px 0 12px 0;
+  font-weight: 700;
+}
+.sub-tab-content > p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* ══════════════════════════════════════
+   INFO GRID & CARDS
+   ══════════════════════════════════════ */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.info-card {
+  background: white;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0,0,0,0.04);
+  position: relative;
+  overflow: hidden;
+}
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sunset-orange), var(--accent-coral));
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.info-card h4 {
+  color: var(--deep-teal);
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.info-card p {
+  margin: 6px 0;
+  line-height: 1.65;
+  color: #555;
+  font-size: 0.93rem;
+}
+.info-card a {
+  color: var(--sunset-orange);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+.info-card a:hover {
+  color: var(--deep-teal);
+}
+
+/* ══════════════════════════════════════
+   DAY TRIP CARDS
+   ══════════════════════════════════════ */
+.daytrip-card {
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.daytrip-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+.daytrip-gradient {
+  width: 100%;
+  height: 180px;
+  display: block;
+  position: relative;
+}
+.daytrip-gradient::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 50px;
+  background: linear-gradient(to top, rgba(0,0,0,0.15), transparent);
+}
+.daytrip-content {
+  padding: 16px;
+}
+.daytrip-content h4 {
+  color: var(--deep-teal);
+  margin-bottom: 8px;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.daytrip-content p {
+  color: #555;
+  line-height: 1.6;
+  margin: 6px 0;
+  font-size: 0.9rem;
+}
+.daytrip-content a {
+  color: var(--sunset-orange);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Google Maps pin links */
+.gm {
+  color: var(--sunset-orange);
+  text-decoration: none;
+  font-size: 0.85em;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.gm:hover { color: var(--deep-teal); }
+
+/* ══════════════════════════════════════
+   MAP
+   ══════════════════════════════════════ */
+.map-container {
+  height: 300px;
+  margin: 20px -16px;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* ══════════════════════════════════════
+   TABLE — horizontal scroll on mobile
+   ══════════════════════════════════════ */
+.trip-table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: block;
+}
+.trip-table thead,
+.trip-table tbody {
+  display: block;
+  width: 100%;
+}
+.trip-table thead tr {
+  display: flex;
+  background: linear-gradient(135deg, var(--deep-teal), #006AAF);
+  color: white;
+}
+.trip-table tbody tr {
+  display: flex;
+  border-bottom: 1px solid #f0f0f0;
+}
+.trip-table tbody tr:last-child {
+  border-bottom: none;
+}
+.trip-table th,
+.trip-table td {
+  padding: 12px;
+  font-size: 0.85rem;
+  text-align: left;
+}
+.trip-table th:first-child,
+.trip-table td:first-child {
+  flex: 0 0 70px;
+  min-width: 70px;
+}
+.trip-table th:nth-child(2),
+.trip-table td:nth-child(2) {
+  flex: 0 0 110px;
+  min-width: 110px;
+}
+.trip-table th:nth-child(3),
+.trip-table td:nth-child(3) {
+  flex: 1;
+  min-width: 0;
+}
+.trip-table th {
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.3px;
+}
+.trip-table td {
+  color: #555;
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════
+   PREGNANCY NOTE
+   ══════════════════════════════════════ */
+.pregnancy-note {
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFF1E6 100%);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  margin: 20px 0;
+  border-left: 4px solid var(--warm-sand);
+  box-shadow: var(--shadow-sm);
+}
+.pregnancy-note p {
+  color: #555;
+  line-height: 1.7;
+  font-size: 0.93rem;
+}
+
+/* ══════════════════════════════════════
+   BOOKING CHECKLIST
+   ══════════════════════════════════════ */
+.booking-checklist {
+  background: white;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  margin: 20px 0;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid rgba(255, 107, 53, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+.booking-checklist::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sunset-orange), var(--warm-sand));
+}
+.booking-checklist h4 {
+  color: var(--deep-teal);
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.booking-checklist ul {
+  list-style: none;
+  padding: 0;
+}
+.booking-checklist li {
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+  color: #555;
+  line-height: 1.6;
+  font-size: 0.93rem;
+}
+.booking-checklist li:last-child {
+  border-bottom: none;
+}
+
+/* ══════════════════════════════════════
+   DAY BLOCKS & TIME BLOCKS
+   ══════════════════════════════════════ */
+.day-block {
+  background: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.day-block h4 {
+  color: var(--deep-teal);
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+}
+
+.time-block {
+  background: #F8F9FA;
+  padding: 16px;
+  margin: 12px 0;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--warm-sand);
+}
+.time-block h5 {
+  color: var(--sunset-orange);
+  margin-bottom: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.time-block p {
+  color: #555;
+  line-height: 1.65;
+  font-size: 0.93rem;
+}
+
+/* ══════════════════════════════════════
+   EVENING CARDS
+   ══════════════════════════════════════ */
+.evening-cards {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0;
+}
+.evening-card {
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.evening-card-header {
+  background: linear-gradient(135deg, var(--deep-teal), #006AAF);
+  color: white;
+  padding: 16px 20px;
+}
+.evening-card-header h4 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.evening-card-body {
+  padding: 20px;
+}
+.evening-card-body p {
+  color: #555;
+  line-height: 1.65;
+  margin: 10px 0;
+  font-size: 0.93rem;
+}
+
+/* ══════════════════════════════════════
+   BEACH & RESTAURANT CARDS
+   ══════════════════════════════════════ */
+.beach-cards, .restaurant-list {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0;
+}
+.beach-card, .restaurant-item {
+  background: white;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.beach-card-body {
+  padding: 0;
+}
+.beach-card-body p {
+  color: #555;
+  line-height: 1.65;
+  margin: 6px 0;
+  font-size: 0.93rem;
+}
+.beach-card-header h4, .restaurant-item h5 {
+  color: var(--deep-teal);
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.phone {
+  color: var(--sunset-orange);
+  font-weight: 500;
+  margin: 6px 0;
+  font-size: 0.9rem;
+}
+/* Make phone numbers tappable */
+.phone a {
+  color: var(--sunset-orange);
+  text-decoration: none;
+}
+.note {
+  background: #F8F9FA;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: #666;
+  border-left: 3px solid var(--warm-sand);
+}
+
+/* ══════════════════════════════════════
+   PHOTO GALLERY
+   ══════════════════════════════════════ */
+.photo-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.photo-gallery img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════ */
+footer {
+  background: var(--night-blue);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 32px 20px;
+  padding-bottom: calc(32px + var(--safe-bottom));
+  font-size: 0.85rem;
+  margin-top: 48px;
+  position: relative;
+}
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sunset-orange), var(--accent-coral), var(--warm-sand));
+}
+
+/* ══════════════════════════════════════
+   BACK TO TOP
+   ══════════════════════════════════════ */
+.back-to-top {
+  position: fixed;
+  bottom: calc(20px + var(--safe-bottom));
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--sunset-orange);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all var(--transition);
+  z-index: 99;
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.back-to-top:hover {
+  background: var(--deep-teal);
+}
+
+/* ══════════════════════════════════════
+   FADE-IN ANIMATION
+   ══════════════════════════════════════ */
+.fade-item {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.fade-item.fade-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET & DESKTOP — min-width: 768px
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .hero {
+    padding: 120px 40px 100px;
+    min-height: 500px;
+  }
+  .hero h1 { font-size: 3.8rem; letter-spacing: -1px; }
+  .hero .subtitle { font-size: 1.35rem; margin-bottom: 24px; }
+  .hero .route { font-size: 1.1rem; }
+  .hero .dates { padding: 14px 36px; font-size: 0.95rem; }
+  .pregnancy-badge { padding: 12px 28px; font-size: 0.9rem; }
+  .hero::after { height: 100px; }
+
+  .tabs {
+    justify-content: center;
+    overflow-x: visible;
+  }
+  .tab {
+    padding: 18px 28px;
+    font-size: 0.93rem;
+  }
+
+  .tab-content {
+    padding: 50px 40px;
+  }
+  .tab-content h2 { font-size: 2.6rem; }
+  .tab-content > p { font-size: 1.1rem; }
+
+  .sub-tabs {
+    margin: 28px 0;
+    padding: 4px;
+    background: #F1F3F5;
+    border-radius: var(--radius-md);
+    overflow-x: visible;
+  }
+  .sub-tab {
+    padding: 12px 22px;
+    font-size: 0.9rem;
+  }
+
+  .sub-tab-content h3 { font-size: 2rem; margin: 20px 0 14px; }
+  .sub-tab-content > p { font-size: 1.05rem; }
+
+  .info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin: 28px 0;
+  }
+  .info-card {
+    padding: 26px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition);
+  }
+  .info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .info-card:hover::before { opacity: 1; }
+  .info-card h4 { font-size: 1.2rem; }
+  .info-card p { font-size: 0.95rem; }
+
+  .daytrip-card {
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition);
+  }
+  .daytrip-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+  }
+  .daytrip-image {
+    height: 220px;
+    transition: transform 0.6s ease;
+  }
+  .daytrip-card:hover .daytrip-image { transform: scale(1.05); }
+  .daytrip-gradient { height: 220px; }
+  .daytrip-content { padding: 24px; }
+  .daytrip-content h4 { font-size: 1.3rem; }
+  .daytrip-content p { font-size: 0.95rem; }
+
+  .map-container {
+    height: 500px;
+    margin: 28px 0;
+    border-radius: var(--radius-lg);
+  }
+
+  /* Table — normal layout on desktop */
+  .trip-table { display: table; }
+  .trip-table thead { display: table-header-group; width: auto; }
+  .trip-table tbody { display: table-row-group; width: auto; }
+  .trip-table thead tr,
+  .trip-table tbody tr { display: table-row; }
+  .trip-table th,
+  .trip-table td {
+    display: table-cell;
+    padding: 18px 24px;
+    font-size: 0.95rem;
+  }
+  .trip-table th:first-child,
+  .trip-table td:first-child,
+  .trip-table th:nth-child(2),
+  .trip-table td:nth-child(2),
+  .trip-table th:nth-child(3),
+  .trip-table td:nth-child(3) {
+    flex: none;
+    min-width: auto;
+  }
+  .trip-table tbody tr {
+    transition: background var(--transition);
+    border-bottom: none;
+  }
+  .trip-table tbody tr:hover { background: var(--soft-cream); }
+  .trip-table td { border-bottom: 1px solid #f0f0f0; }
+  .trip-table tbody tr:last-child td { border-bottom: none; }
+  .trip-table { box-shadow: var(--shadow-md); }
+
+  .pregnancy-note { padding: 26px; }
+  .booking-checklist { padding: 28px; }
+  .booking-checklist h4 { font-size: 1.25rem; }
+
+  .day-block { padding: 32px; margin: 28px 0; }
+  .day-block h4 { font-size: 1.6rem; }
+  .time-block { padding: 20px; }
+  .time-block h5 { font-size: 1.1rem; }
+
+  .evening-card-header { padding: 20px 26px; }
+  .evening-card-header h4 { font-size: 1.3rem; }
+  .evening-card-body { padding: 26px; }
+  .evening-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .beach-card, .restaurant-item { padding: 26px; }
+  .beach-card:hover, .restaurant-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .photo-gallery {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .photo-gallery img {
+    height: 220px;
+    transition: all 0.4s ease;
+    cursor: pointer;
+  }
+  .photo-gallery img:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-lg);
+  }
+
+  footer { padding: 44px 40px; margin-top: 72px; }
+
+  .back-to-top {
+    bottom: 28px;
+    right: 28px;
+    width: 48px;
+    height: 48px;
+    font-size: 1.4rem;
+  }
+  .back-to-top:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   LARGE DESKTOP — min-width: 1200px
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 1200px) {
+  .hero h1 { font-size: 4.5rem; letter-spacing: -1.5px; }
+  .hero .subtitle { font-size: 1.5rem; }
+  .hero { padding: 140px 40px 110px; min-height: 520px; }
+  .tab { padding: 20px 32px; font-size: 0.95rem; }
+  .tab-content h2 { font-size: 2.8rem; }
+  .sub-tab-content h3 { font-size: 2.2rem; }
+  .day-block { padding: 36px; }
+  .day-block h4 { font-size: 1.7rem; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   PRINT
+   ══════════════════════════════════════════════════════════ */
+@media print {
+  .tabs, .sub-tabs, .hero, footer, .back-to-top, .scroll-progress { display: none !important; }
+  .tab-content { display: block !important; padding: 20px 0; page-break-after: always; }
+  .map-container { height: 300px; }
+  body { font-size: 11pt; color: #333; background: white; }
+  h2 { font-size: 18pt; color: #000; }
+  h3 { font-size: 14pt; }
+  .info-card, .daytrip-card, .beach-card, .restaurant-item, .day-block {
+    box-shadow: none; border: 1px solid #ddd; break-inside: avoid;
+  }
+  a { color: #333; }
+  .daytrip-card:hover, .info-card:hover { transform: none; }
+}

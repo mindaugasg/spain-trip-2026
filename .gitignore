@@ -1,0 +1,5 @@
+.claude/
+*.bat
+embed_images.py
+*.md
+!README.md
