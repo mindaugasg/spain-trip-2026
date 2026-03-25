@@ -263,3 +263,20 @@ if ('IntersectionObserver' in window) {
   var _showTab = showTab;
   showTab = function(n, e) { _showTab(n, e); setTimeout(function() { setupFade(document.getElementById(n)); }, 60); };
 }
+
+// ── Auto-select tab based on current trip date ──
+(function() {
+  var now = new Date();
+  var y = now.getFullYear(), mo = now.getMonth() + 1, d = now.getDate();
+  if (y !== 2026) return;
+
+  var tabId;
+  if (mo === 3 && d >= 31)            tabId = 'cordoba-city';
+  else if (mo === 4 && d <= 5)        tabId = 'cordoba-city';
+  else if (mo === 4 && d >= 6  && d <= 11) tabId = 'almunecar-city';
+  else if (mo === 4 && d >= 12 && d <= 17) tabId = 'alfarnatejo-area';
+  else return; // outside trip dates — keep default
+
+  var btn = document.querySelector('.tabs .tab[onclick*="' + tabId + '"]');
+  if (btn) showTab(tabId, btn);
+})();

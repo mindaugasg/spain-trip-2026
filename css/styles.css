@@ -27,6 +27,28 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* ── PASSWORD GATE ── */
+#password-gate {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: url('../images/hero-alhambra.jpg') center/cover no-repeat;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Source Sans 3', sans-serif;
+}
+#password-gate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,78,137,0.88) 0%, rgba(26,27,46,0.75) 40%, rgba(201,150,59,0.7) 100%);
+}
+#password-gate > div {
+  position: relative;
+  z-index: 1;
+}
+
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -574,6 +596,18 @@ body {
 .booking-checklist li:last-child {
   border-bottom: none;
 }
+.booking-checklist a {
+  color: var(--sunset-orange);
+  text-decoration: none;
+  font-weight: 500;
+}
+.booking-checklist a:hover { color: var(--deep-teal); }
+.pregnancy-note a {
+  color: var(--sunset-orange);
+  text-decoration: none;
+  font-weight: 500;
+}
+.pregnancy-note a:hover { color: var(--deep-teal); }
 
 /* ══════════════════════════════════════
    DAY BLOCKS & TIME BLOCKS
@@ -794,10 +828,6 @@ footer::before {
   .pregnancy-badge { padding: 12px 28px; font-size: 0.9rem; }
   .hero::after { height: 100px; }
 
-  .tabs {
-    justify-content: center;
-    overflow-x: visible;
-  }
   .tab {
     padding: 18px 28px;
     font-size: 0.93rem;
@@ -834,11 +864,6 @@ footer::before {
     box-shadow: var(--shadow-md);
     transition: all var(--transition);
   }
-  .info-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-  .info-card:hover::before { opacity: 1; }
   .info-card h4 { font-size: 1.2rem; }
   .info-card p { font-size: 0.95rem; }
 
@@ -846,15 +871,10 @@ footer::before {
     box-shadow: var(--shadow-md);
     transition: all var(--transition);
   }
-  .daytrip-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-xl);
-  }
   .daytrip-image {
     height: 220px;
     transition: transform 0.6s ease;
   }
-  .daytrip-card:hover .daytrip-image { transform: scale(1.05); }
   .daytrip-gradient { height: 220px; }
   .daytrip-content { padding: 24px; }
   .daytrip-content h4 { font-size: 1.3rem; }
@@ -908,16 +928,8 @@ footer::before {
   .evening-card-header { padding: 20px 26px; }
   .evening-card-header h4 { font-size: 1.3rem; }
   .evening-card-body { padding: 26px; }
-  .evening-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
 
   .beach-card, .restaurant-item { padding: 26px; }
-  .beach-card:hover, .restaurant-item:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
-  }
 
   .photo-gallery {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -929,10 +941,6 @@ footer::before {
     transition: all 0.4s ease;
     cursor: pointer;
   }
-  .photo-gallery img:hover {
-    transform: scale(1.03);
-    box-shadow: var(--shadow-lg);
-  }
 
   footer { padding: 44px 40px; margin-top: 72px; }
 
@@ -943,9 +951,47 @@ footer::before {
     height: 48px;
     font-size: 1.4rem;
   }
+}
+
+/* ══════════════════════════════════════════════════════════
+   HOVER EFFECTS — only on pointer devices (not touch)
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 768px) and (hover: hover) {
+  .info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .info-card:hover::before { opacity: 1; }
+  .daytrip-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+  }
+  .daytrip-card:hover .daytrip-image { transform: scale(1.05); }
+  .evening-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .beach-card:hover, .restaurant-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+  .photo-gallery img:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-lg);
+  }
   .back-to-top:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-xl);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABS CENTERING — only when all 7 tabs fit (~1000px+)
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 1000px) {
+  .tabs {
+    justify-content: center;
+    overflow-x: visible;
   }
 }
 
