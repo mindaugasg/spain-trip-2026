@@ -67,7 +67,7 @@ function initCordobaCityMap() {
   addMarker(m, 37.884, -4.778, 'food', 'Mercado Victoria', 'Food hall, 30+ stalls');
 
   // Home
-  addMarker(m, 37.874, -4.775, 'home', 'Airbnb (approx)', 'South bank');
+  addMarker(m, 37.870424, -4.780670, 'home', 'Airbnb', 'Your accommodation');
 }
 
 // ── CORDOBA DAY TRIPS MAP ──
