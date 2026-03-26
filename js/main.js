@@ -65,6 +65,10 @@ function initCordobaCityMap() {
   addMarker(m, 37.879, -4.779, 'show', 'Guided Old City Walking Tour', 'Daily 10:00 & 17:00, 2 hrs');
   addMarker(m, 37.882, -4.771, 'sight', 'Templo Romano', 'Free, 1st-century columns, always open');
   addMarker(m, 37.875, -4.777, 'sight', 'Torre de la Calahorra', '€4.50, best rooftop view in Córdoba');
+  addMarker(m, 37.879, -4.780, 'sight', 'Sinagoga de Córdoba', '€0.30 (free EU), one of 3 medieval synagogues in Spain');
+  addMarker(m, 37.880, -4.782, 'sight', 'Puerta de Almodóvar', 'Free, medieval city gate, photograph from outside');
+  addMarker(m, 37.879, -4.780, 'activity', 'Zoco Municipal', 'Free, working craft market in the Judería');
+  addMarker(m, 37.879, -4.780, 'sight', 'Casa de Sefarad', '€4, Sephardic Jewish museum, usually empty');
 
   // Restaurants
   addMarker(m, 37.880, -4.780, 'food', 'Bodegas Mezquita', 'Salmorejo, oxtail');
@@ -117,6 +121,8 @@ function initAlmunecarCityMap() {
   addMarker(m, 36.755, -3.666, 'sight', 'Roman Aqueduct', 'Free, 3 km north');
   addMarker(m, 36.731, -3.697, 'sight', 'Peñón del Santo', 'Best view in Almuñécar, 10 min walk');
   addMarker(m, 36.718, -3.730, 'sight', 'La Herradura Mirador (Cerro Gordo)', 'Full bay view from cliff road');
+  addMarker(m, 36.732, -3.694, 'sight', 'Barrio de la Loma', 'Authentic Moorish quarter, zero tourists');
+  addMarker(m, 36.733, -3.692, 'garden', 'Parque El Majuelo', 'Free, Roman garum factory, subtropical garden');
 
   // Restaurants
   addMarker(m, 36.736, -3.685, 'food', 'Firmvm', 'Sea views, €25-40pp');
@@ -177,6 +183,9 @@ function initAlfarnatejoTripsMap() {
   addMarker(m, 36.742, -5.166, 'sight', 'Ronda', '1h 30min, Puente Nuevo');
   addMarker(m, 36.935, -4.555, 'activity', 'Caminito del Rey', '50 min, €10');
   addMarker(m, 36.748, -4.023, 'sight', 'El Acebuchal Ghost Village', '#1 hidden gem, 30-35 min');
+  addMarker(m, 36.870, -4.041, 'sight', 'Sedella', '20-25 min, perfectly preserved white village');
+  addMarker(m, 36.854, -3.987, 'sight', 'Canillas de Albaida', '35-40 min, local Moscatel wine');
+  addMarker(m, 37.320, -4.005, 'sight', 'Montefrío', '1h15, NatGeo #1 world view 2019');
   addMarker(m, 37.242, -5.108, 'sight', 'Osuna', '1h 15min, €4');
   addMarker(m, 37.266, -4.316, 'sight', 'Iznajar Lake', '1h, castle €3');
   addMarker(m, 37.093, -4.389, 'sight', 'Archidona', '40 min, free');
